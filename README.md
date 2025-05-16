@@ -42,7 +42,15 @@ Public endpoints available for authentication and API docs
 - `com.bookstore.service` - Business logic and service layer  
 - `com.bookstore.repository` - JPA repositories interacting with the database  
 - `com.bookstore.config` - Security configuration, JWT filter, and application configs  
-- `com.bookstore.model` - Entity classes (User, Book, Author, Order, etc.)  
+- `com.bookstore.model` - Entity classes (User, Book, Author, Order, etc.)
+- com.bookstore
+│
+├── controller    # API Controllers
+├── service       # Business Logic
+├── repository    # Data Access Layer
+├── model         # Entity Classes
+├── config        # Security & JWT Config
+
 
 ---
 
@@ -116,13 +124,19 @@ Register and login to get JWT token
 Pass JWT token in requests to access secured endpoints
 Swagger UI can be used for convenient testing
 
-**Future Improvements (Optional)**
-Add email notifications and password reset
-Implement frontend with React or Angular
-Add comprehensive unit and integration tests
-Integrate payment gateway for orders
-Add Docker support for easy deployment
+🧪 Testing Tips
+Use Postman or Swagger UI
+Register a user → Login → Get JWT token → Test secured APIs
+Add JWT to Authorization header in each request
 
-**Contact**
-For questions or support, please contact: [kbc9553@gmail.com]
+💡 Future Enhancements
+Email verification & password reset
+Docker support
+Payment gateway integration
+React/Angular frontend
+Unit & integration tests
+
+📧 Contact
+For questions or feedback:
+📩 kbc9553@gmail.com
 
