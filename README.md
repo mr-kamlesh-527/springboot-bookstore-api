@@ -88,6 +88,8 @@ Run via Maven:
 mvn spring-boot:run
 Application will start on: http://localhost:8085
 
+**Main Url for the Project **-  http://localhost:8085/frontend/welcome.html
+
 **Using the APIs**
 Public Endpoints
 POST /api/auth/register - Register new user
