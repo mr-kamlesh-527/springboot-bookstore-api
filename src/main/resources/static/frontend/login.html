@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="/frontend/css/style.css">
+</head>
+<body>
+	<nav>
+	  <div class="nav-left">📚 BookNest</div>
+	  <div class="nav-right">
+	    <a href="/frontend/home.html">Home</a>
+	    <a href="/frontend/login.html">Login</a>
+	    <a href="/frontend/register.html">Register</a>
+	  </div>
+	</nav>
+
+  <h2>Login Page</h2>
+  
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Username" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+  </form>
+
+  <!-- 🔗 Register Button -->
+  <p>Don't have an account?</p>
+  <button onclick="location.href='/frontend/register.html'">Register Here</button>
+
+  <script src="/frontend/js/login.js"></script>
+  
+  <footer>
+    &copy; 2025 BookNest. All rights reserved.
+  </footer>
+</body>
+</html>

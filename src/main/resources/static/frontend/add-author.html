@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Author</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 5px #ccc;
+    }
+    input, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Add Author</h2>
+  <form id="addAuthorForm">
+    <input type="text" id="name" placeholder="Author Name" required />
+    <button type="submit">Add Author</button>
+    <!--<a href="welcome.html">← Back to Welcome</a>-->
+    <div style="margin-top: 10px;">
+	    <a href="update-author.html" style="margin-right: 10px; width: 30px;">
+	      <button type="button">Update Author</button>
+	    </a>
+	    <a href="welcome.html" style="margin-right: 10px;">
+	    <button type="button">🗑️ welcome page</button>
+	    </a>
+	  </div>
+  </form>
+
+		
+	  
+  <script>
+    document.getElementById('addAuthorForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login first.");
+        return;
+      }
+
+      const name = document.getElementById('name').value.trim();
+      if (!name) {
+        alert("Author name is required.");
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/authors", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify({ name })
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(errorText);
+        }
+
+        alert("✅ Author added successfully!");
+        e.target.reset();
+
+      } catch (err) {
+        alert("❌ Error: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>

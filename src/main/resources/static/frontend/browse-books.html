@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Browse Books</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h2 {
+      color: #333;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+      box-shadow: 0 0 5px #ccc;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    a, button {
+      display: inline-block;
+      margin-top: 15px;
+      margin-right: 10px;
+      color: #007bff;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: underline;
+    }
+    a:hover, button:hover {
+      text-decoration: underline;
+    }
+    .pagination {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Available Books</h2>
+  <table id="booksTable">
+    <thead>
+      <tr>
+        <th>ISBN</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Price</th>
+        <th>Stock</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Books will be populated here -->
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button onclick="prevPage()">← Prev</button>
+    <span id="pageInfo"></span>
+    <button onclick="nextPage()">Next →</button>
+  </div>
+
+  <a href="welcome.html">← Back to Welcome</a>
+
+  <script>
+    let currentPage = 0;
+    const pageSize = 5;
+    let totalPages = 1;
+
+    async function fetchBooks(page = 0) {
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(`/api/books/customer/books?page=${page}&size=${pageSize}`, {
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json"
+          },
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+
+        const data = await response.json(); // Expecting a Page<BookDto> structure
+        const books = data.content;
+        totalPages = data.totalPages;
+        currentPage = data.number;
+
+        const tbody = document.querySelector('#booksTable tbody');
+        tbody.innerHTML = '';
+
+        books.forEach(book => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${book.isbn}</td>
+            <td>${book.title}</td>
+            <td>${book.authorName || ''}</td>
+            <td>${book.price}</td>
+            <td>${book.stock}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById('pageInfo').textContent = `Page ${currentPage + 1} of ${totalPages}`;
+      } catch (error) {
+        alert("❌ Error: " + error.message);
+      }
+    }
+
+    function nextPage() {
+      if (currentPage + 1 < totalPages) {
+        fetchBooks(currentPage + 1);
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 0) {
+        fetchBooks(currentPage - 1);
+      }
+    }
+
+    // Initial fetch
+    fetchBooks();
+  </script>
+</body>
+</html>

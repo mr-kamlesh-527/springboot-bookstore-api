@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Author</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            padding: 30px;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        #responseMsg {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .links {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .links a button {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Update Author</h2>
+    <form id="updateAuthorForm">
+        <input type="number" id="authorId" placeholder="Author ID (required)" required />
+        <input type="text" id="authorName" placeholder="Author Name" required />
+        <button type="submit">Update Author</button>
+    </form>
+    <p id="responseMsg"></p>
+    <div class="links">
+        <a href="add-author.html">
+            <button type="button">➕ Add Author</button>
+        </a>
+        <a href="welcome.html">
+            <button type="button">🏠 Welcome Page</button>
+        </a>
+    </div>
+</div>
+
+<script>
+    document.getElementById("updateAuthorForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const idValue = document.getElementById("authorId").value.trim();
+        const name = document.getElementById("authorName").value.trim();
+        const responseMsg = document.getElementById("responseMsg");
+
+        const id = parseInt(idValue, 10);
+        const token = localStorage.getItem("token");
+
+        // Debug prints
+        console.log("Author ID:", id);
+        console.log("Author Name:", name);
+        console.log("JWT Token:", token);
+
+        if (!id || isNaN(id) || !name) {
+            alert("❌ Please provide a valid numeric Author ID and a Name.");
+            return;
+        }
+
+        if (!token) {
+            alert("❌ Token not found. Please login again.");
+            return;
+        }
+
+        const authorData = { name };
+
+        try {
+            const response = await fetch(`http://localhost:8085/api/authors/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(authorData)
+            });
+
+            const text = await response.text();
+            console.log("Response Text:", text);
+
+            if (!response.ok) {
+                alert(`❌ Update failed (${response.status}): ${text}`);
+                throw new Error(`Update failed! Server message: ${text}`);
+            }
+
+            responseMsg.style.color = "green";
+            responseMsg.textContent = "✅ Author updated successfully!";
+            alert("✅ Author updated successfully!");
+        } catch (error) {
+            console.error("Error:", error.message);
+            responseMsg.style.color = "red";
+            responseMsg.textContent = error.message;
+        }
+    });
+</script>
+
+
+</body>
+</html>

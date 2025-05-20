@@ -1,0 +1,107 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>View Orders</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h2 {
+      color: #333;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+      box-shadow: 0 0 5px #ccc;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    a {
+      display: inline-block;
+      margin-top: 15px;
+      color: #007bff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h2>Your Order History</h2>
+  <table id="ordersTable">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Book ISBN</th>
+        <th>Title</th>
+        <th>Quantity</th>
+        <th>Order Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Orders will be populated here -->
+    </tbody>
+  </table>
+  <a href="welcome.html">← Back to Welcome</a>
+
+  <script>
+    async function fetchOrders() {
+      const token = localStorage.getItem('token'); // 🔑 Assumes token stored as 'token'
+      if (!token) {
+        alert("You are not logged in. Token missing.");
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/orders/history', {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch orders: ' + response.status);
+        }
+
+        const orders = await response.json();
+        const tbody = document.getElementById('ordersTable').querySelector('tbody');
+        tbody.innerHTML = '';
+
+        orders.forEach(order => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${order.orderId}</td>
+            <td>${order.bookIsbn}</td>
+            <td>${order.bookTitle || ''}</td>
+            <td>${order.quantity}</td>
+            <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+            <td>${order.status || 'Pending'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+      } catch (error) {
+        alert(error.message);
+        console.error(error);
+      }
+    }
+
+    fetchOrders();
+  </script>
+</body>
+</html> 

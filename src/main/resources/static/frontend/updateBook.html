@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Book</title>
+    <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h2 {
+      color: #333;
+    }
+    form {
+      max-width: 400px;
+      background: white;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px #ccc;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    a {
+      display: inline-block;
+      margin-top: 15px;
+      color: #007bff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+    <h2>Update Book Details</h2>
+    <form id="updateForm">
+        <label>Book ID:</label>
+        <input type="number" id="bookId" required><br><br>
+
+        <label>Title:</label>
+        <input type="text" id="title"><br><br>
+
+        <label>ISBN:</label>
+        <input type="text" id="isbn" required><br><br>
+
+        <label>Price:</label>
+        <input type="number" step="0.01" id="price"><br><br>
+
+        <label>Stock Quantity:</label>
+        <input type="number" id="stock"><br><br>
+
+        <button type="submit">Update Book</button>
+    </form>
+
+    <p id="result"></p>
+
+    <a href="welcome.html">← Back to Welcome</a>
+    <div style="margin-top: 10px;">
+        <a href="add-book.html" style="margin-right: 10px;">
+            <button type="button">Add Book</button>
+        </a>
+        <a href="deleteBook.html">
+            <button type="button">🗑️ Delete Book</button>
+        </a>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token"); // get JWT token
+        const form = document.getElementById("updateForm");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const bookId = document.getElementById("bookId").value;
+            const payload = {
+                title: document.getElementById("title").value,
+                isbn: document.getElementById("isbn").value,
+                price: parseFloat(document.getElementById("price").value),
+                stockQuantity: parseInt(document.getElementById("stock").value)
+            };
+
+            try {
+                const res = await fetch(`/api/books/admin/books/${bookId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                document.getElementById("result").innerText = res.ok ? "Book updated successfully!" : data.message;
+            } catch (err) {
+                document.getElementById("result").innerText = "Error: " + err.message;
+            }
+        });
+    </script>
+</body>
+</html>

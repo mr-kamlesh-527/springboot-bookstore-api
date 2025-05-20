@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add Book</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h2 {
+      color: #333;
+    }
+    form {
+      max-width: 400px;
+      background: white;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px #ccc;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    a {
+      display: inline-block;
+      margin-top: 15px;
+      color: #007bff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h2>Add New Book</h2>
+  <form id="addBookForm">
+    <label for="isbn">ISBN:</label>
+    <input type="text" id="isbn" name="isbn" required />
+
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required />
+
+    <label for="authorId">Select Author:</label>
+    <select id="authorId" name="authorId" required>
+      <option value="">-- Select Author --</option>
+    </select>
+
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" required step="0.01" />
+
+    <!--<label for="stock">Stock:</label>
+    <input type="number" id="stock" name="stock" required />-->
+
+    <label for="stockQuantity">Stock Quantity:</label>
+    <input type="number" id="stockQuantity" name="stockQuantity" required />
+
+    <button type="submit">Add Book</button>
+  </form>
+  <a href="welcome.html">← Back to Welcome</a>
+	<div style="margin-top: 10px;">
+	    <a href="updateBook.html" style="margin-right: 10px;">
+	      <button type="button">✏️ Update Book</button>
+	    </a>
+	    <a href="deleteBook.html">
+	      <button type="button">🗑️ Delete Book</button>
+	    </a>
+	  </div>
+  <script>
+    async function loadAuthors() {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("⚠️ No token found. Please login first.");
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/authors', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error("Failed to fetch authors: " + errorText);
+        }
+
+        const authors = await response.json();
+        const select = document.getElementById("authorId");
+
+        authors.forEach(author => {
+          const option = document.createElement("option");
+          option.value = author.id;
+          option.textContent = author.name;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        console.error("❌ Author Load Error:", error);
+        alert("❌ Could not load authors:\n" + error.message);
+      }
+    }
+
+    window.onload = function () {
+      loadAuthors();
+    };
+
+    document.getElementById('addBookForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("⚠️ No token found. Please login first.");
+        return;
+      }
+
+      const isbn = e.target.isbn.value.trim();
+      const title = e.target.title.value.trim();
+      const authorId = parseInt(e.target.authorId.value);
+      const price = parseFloat(e.target.price.value);
+      
+      const stockQuantity = parseInt(e.target.stockQuantity.value);
+
+      if (!isbn || !title || isNaN(authorId) || isNaN(price) || isNaN(stockQuantity)) {
+        alert("❗ Please fill in all fields correctly.");
+        return;
+      }
+
+      const bookData = {
+        isbn,
+        title,
+        price,
+        stockQuantity,
+        author: { id: authorId }  // 🔧 Fixed structure for backend compatibility
+      };
+
+      console.log("📤 Sending:", bookData);
+
+      try {
+        const response = await fetch(`/api/books/admin/books`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify(bookData)
+        });
+
+        const responseText = await response.text();
+        console.log("📩 Response:", response.status, responseText);
+
+        if (!response.ok) {
+          throw new Error(responseText || "Failed to add book");
+        }
+
+        alert("✅ Book added successfully!");
+        e.target.reset();
+        document.getElementById('authorId').selectedIndex = 0;
+
+      } catch (error) {
+        console.error("❌ Submit Error:", error);
+        alert("❌ Failed to add book:\n" + error.message + "\n\n📤 Sent:\n" + JSON.stringify(bookData, null, 2));
+      }
+    });
+  </script>
+</body>
+</html>
