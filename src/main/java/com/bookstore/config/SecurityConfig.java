@@ -36,11 +36,10 @@ public class SecurityConfig {
                     "/api/welcome",
                     "/api/auth/**",
                     "/swagger-ui.html",
-                    "/swagger-ui/index.html",      // Added for swagger UI compatibility
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/v3/api-docs.yaml",          // Added in case swagger requests yaml
-                    "/v3/api-docs.json",          // Added in case swagger requests json
+                    "/v3/api-docs.yaml",
+                    "/v3/api-docs.json",
                     "/frontend/**",
                     "/frontend/*.html",
                     "/frontend/js/**"

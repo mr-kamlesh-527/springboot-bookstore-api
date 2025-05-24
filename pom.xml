@@ -81,6 +81,7 @@
 		    <version>2.2.0</version>
 		</dependency>
 
+
 		<!-- JWT Dependency -->
 		<dependency>
 		    <groupId>io.jsonwebtoken</groupId>
